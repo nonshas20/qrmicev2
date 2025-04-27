@@ -253,7 +253,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
           <Alert variant={
             lastScanned.status === "checked-in" || lastScanned.status === "checked-out"
               ? "default"
-              : "warning"
+              : "destructive"
           }>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
