@@ -1,4 +1,5 @@
 import { MainNav } from "@/components/ui/main-nav";
+import { MobileNav } from "@/components/ui/mobile-nav";
 import { UserNav } from "@/components/ui/user-nav";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { QrCode } from "lucide-react";
@@ -25,6 +26,7 @@ export default function DashboardLayout({
       <div className="flex-1">
         <div className="border-b">
           <div className="container flex h-14 items-center">
+            <MobileNav />
             <MainNav />
           </div>
         </div>

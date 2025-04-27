@@ -18,6 +18,13 @@ export interface Event {
   created_by: string;
   created_at: string;
   updated_at: string;
+  attendance?: {
+    present: number;
+    late: number;
+    absent: number;
+    excused: number;
+    total: number;
+  };
 }
 
 export interface Attendance {

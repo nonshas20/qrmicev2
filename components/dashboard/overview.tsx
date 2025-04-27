@@ -21,11 +21,16 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
     { name: 'Excused', value: stats.excused, color: 'hsl(var(--chart-4))' },
   ];
 
-  const barData = latestEvents.map(event => ({
-    name: event.title.length > 15 ? event.title.substring(0, 15) + '...' : event.title,
-    Present: Math.floor(Math.random() * 25) + 5, // Placeholder data
-    Late: Math.floor(Math.random() * 10) + 1,
-  }));
+  // Use real event attendance data or show zeros if no data available
+  const barData = latestEvents.map(event => {
+    const eventAttendance = event.attendance || { present: 0, late: 0, absent: 0, excused: 0 };
+    return {
+      name: event.title.length > 15 ? event.title.substring(0, 15) + '...' : event.title,
+      Present: eventAttendance.present || 0,
+      Late: eventAttendance.late || 0,
+      Absent: eventAttendance.absent || 0,
+    };
+  });
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-4">
@@ -41,7 +46,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
           </p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Present</CardTitle>
@@ -54,7 +59,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
           </p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Late</CardTitle>
@@ -67,7 +72,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
           </p>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Absent</CardTitle>
@@ -129,6 +134,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
                 <Legend />
                 <Bar dataKey="Present" fill="hsl(var(--chart-1))" />
                 <Bar dataKey="Late" fill="hsl(var(--chart-2))" />
+                <Bar dataKey="Absent" fill="hsl(var(--chart-3))" />
               </BarChart>
             </ResponsiveContainer>
           </div>

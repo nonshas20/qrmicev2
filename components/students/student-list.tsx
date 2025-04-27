@@ -41,20 +41,28 @@ export function StudentList({ students, onDelete, onPrint, onGenerateQR }: Stude
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search students..."
-            className="pl-8"
+            className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Link href="/dashboard/students/new">
-          <Button>Add Student</Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Link href="/dashboard/students/print-all" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto gap-2">
+              <Printer className="h-4 w-4" />
+              Print All QR
+            </Button>
+          </Link>
+          <Link href="/dashboard/students/new" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">Add Student</Button>
+          </Link>
+        </div>
       </div>
 
       {filteredStudents.length === 0 ? (

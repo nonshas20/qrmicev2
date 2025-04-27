@@ -111,19 +111,19 @@ export default function EventsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Events</h2>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="relative flex-1 max-w-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search events..."
-            className="pl-8"
+            className="pl-8 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Link href="/dashboard/events/new">
-          <Button>Add Event</Button>
+        <Link href="/dashboard/events/new" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto">Add Event</Button>
         </Link>
       </div>
 
@@ -143,14 +143,14 @@ export default function EventsPage() {
           </div>
         </div>
       ) : (
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="whitespace-nowrap">Title</TableHead>
+                <TableHead className="whitespace-nowrap hidden md:table-cell">Location</TableHead>
+                <TableHead className="whitespace-nowrap">Date</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -164,9 +164,9 @@ export default function EventsPage() {
 
                 return (
                   <TableRow key={event.id}>
-                    <TableCell className="font-medium">{event.title}</TableCell>
-                    <TableCell>{event.location || "No location"}</TableCell>
-                    <TableCell>{format(startDate, "MMM d, yyyy")}</TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{event.title}</TableCell>
+                    <TableCell className="hidden md:table-cell">{event.location || "No location"}</TableCell>
+                    <TableCell className="whitespace-nowrap">{format(startDate, "MMM d, yyyy")}</TableCell>
                     <TableCell>
                       {isUpcoming && (
                         <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
