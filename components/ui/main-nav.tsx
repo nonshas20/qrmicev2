@@ -3,18 +3,18 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { DivideIcon as LucideIcon, QrCode, Users, Calendar, LineChart, Settings, Home } from "lucide-react";
+import { LucideIcon, QrCode, Users, Calendar, LineChart, Settings, Home } from "lucide-react";
 
 interface NavItem {
   title: string;
   href: string;
-  icon: LucideIcon;
+  icon: React.ElementType;
   disabled?: boolean;
 }
 
 export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
-  
+
   const navItems: NavItem[] = [
     {
       title: "Home",
