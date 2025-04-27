@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Printer } from "lucide-react";
 import { AttendeesList } from "@/components/events/attendees-list";
 import { Event } from "@/types";
 import { supabase } from "@/lib/supabase";
@@ -86,13 +86,21 @@ export default function EventAttendeesPage() {
           </Link>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Event Attendees</h2>
         </div>
-        <div>
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             onClick={() => router.push(`/dashboard/scanner?event=${event.id}`)}
             className="w-full sm:w-auto"
           >
             Scan QR Codes
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/dashboard/events/${event.id}/attendees/print`)}
+            className="w-full sm:w-auto gap-2"
+          >
+            <Printer className="h-4 w-4" />
+            Print Attendees
           </Button>
         </div>
       </div>
