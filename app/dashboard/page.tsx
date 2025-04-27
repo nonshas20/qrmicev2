@@ -68,7 +68,6 @@ export default async function DashboardPage() {
       <div className="grid gap-4">
         <div>
           <h3 className="text-lg font-medium">Overview</h3>
-          {/* @ts-expect-error Server Component */}
           <DashboardOverview latestEvents={events || []} initialStats={stats} />
         </div>
         <div>

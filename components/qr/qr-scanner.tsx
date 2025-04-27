@@ -26,10 +26,10 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
   const handleDecode = async (result: string) => {
     try {
       setError(null);
-      
+
       // Parse the QR code data
       const qrData = JSON.parse(result);
-      
+
       if (!qrData.id) {
         throw new Error("Invalid QR code format");
       }
@@ -54,11 +54,11 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
         .single();
 
       const now = new Date().toISOString();
-      
+
       if (mode === 'time-in') {
         // Handle time-in logic
         if (attendanceData && attendanceData.time_in) {
-          setLastScanned({ 
+          setLastScanned({
             student: studentData,
             status: "already-checked-in"
           });
@@ -68,7 +68,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
         const { data: newAttendance, error: createError } = attendanceData
           ? await supabase
               .from('attendance')
-              .update({ 
+              .update({
                 time_in: now,
                 status: 'present',
                 updated_at: now
@@ -78,7 +78,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
               .single()
           : await supabase
               .from('attendance')
-              .insert({ 
+              .insert({
                 student_id: qrData.id,
                 event_id: event.id,
                 time_in: now,
@@ -91,16 +91,35 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
           throw new Error("Failed to record attendance");
         }
 
-        // Call API route to send email notification
-        // This would be implemented in a separate API route
+        // Send email notification
+        try {
+          const emailResponse = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              student: studentData,
+              eventTitle: event.title,
+              timeIn: now,
+              timeOut: null
+            }),
+          });
 
-        setLastScanned({ 
+          if (!emailResponse.ok) {
+            console.warn('Failed to send email notification');
+          }
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+        }
+
+        setLastScanned({
           student: studentData,
           status: "checked-in"
         });
-        
+
         onAttendanceRecorded(newAttendance);
-        
+
         toast({
           title: "Time-in recorded",
           description: `${studentData.name} has been checked in`,
@@ -110,7 +129,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
       } else {
         // Handle time-out logic
         if (!attendanceData || !attendanceData.time_in) {
-          setLastScanned({ 
+          setLastScanned({
             student: studentData,
             status: "not-checked-in"
           });
@@ -118,7 +137,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
         }
 
         if (attendanceData.time_out) {
-          setLastScanned({ 
+          setLastScanned({
             student: studentData,
             status: "already-checked-out"
           });
@@ -127,7 +146,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
 
         const { data: updatedAttendance, error: updateError } = await supabase
           .from('attendance')
-          .update({ 
+          .update({
             time_out: now,
             updated_at: now
           })
@@ -139,16 +158,35 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
           throw new Error("Failed to record time-out");
         }
 
-        // Call API route to send email notification
-        // This would be implemented in a separate API route
+        // Send email notification
+        try {
+          const emailResponse = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              student: studentData,
+              eventTitle: event.title,
+              timeIn: new Date(attendanceData.time_in),
+              timeOut: now
+            }),
+          });
 
-        setLastScanned({ 
+          if (!emailResponse.ok) {
+            console.warn('Failed to send email notification');
+          }
+        } catch (emailError) {
+          console.error('Error sending email:', emailError);
+        }
+
+        setLastScanned({
           student: studentData,
           status: "checked-out"
         });
-        
+
         onAttendanceRecorded(updatedAttendance);
-        
+
         toast({
           title: "Time-out recorded",
           description: `${studentData.name} has been checked out`,
@@ -174,7 +212,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
 
   const getStatusBadge = () => {
     if (!lastScanned) return null;
-    
+
     switch (lastScanned.status) {
       case "checked-in":
         return <Badge className="bg-green-500">Checked In</Badge>;
@@ -210,11 +248,11 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
+
         {lastScanned && (
           <Alert variant={
-            lastScanned.status === "checked-in" || lastScanned.status === "checked-out" 
-              ? "default" 
+            lastScanned.status === "checked-in" || lastScanned.status === "checked-out"
+              ? "default"
               : "warning"
           }>
             <div className="flex flex-col gap-2">
@@ -232,7 +270,7 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
             </div>
           </Alert>
         )}
-        
+
         <div className="flex space-x-2 mb-4">
           <Button
             variant={mode === 'time-in' ? 'default' : 'outline'}
@@ -271,8 +309,8 @@ export function QRScanner({ event, onAttendanceRecorded }: QRScannerProps) {
         )}
       </CardContent>
       <CardFooter>
-        <Button 
-          onClick={toggleScanner} 
+        <Button
+          onClick={toggleScanner}
           className="w-full"
           variant={scanning ? "secondary" : "default"}
         >
