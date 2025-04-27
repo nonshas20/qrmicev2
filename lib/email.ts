@@ -1,5 +1,3 @@
-"use server";
-
 import nodemailer from 'nodemailer';
 import { Student } from '@/types';
 
