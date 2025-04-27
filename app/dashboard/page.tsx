@@ -2,6 +2,10 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { Event, AttendanceStats } from '@/types';
 
+// Add export for dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function DashboardPage() {
   const supabase = createServerComponentClient({ cookies });
 
