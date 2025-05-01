@@ -54,6 +54,11 @@ export function SignupForm() {
     setError(null);
 
     try {
+      // Get the base URL for redirects
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://qrmicev2-fw9u.vercel.app'
+        : 'http://localhost:3000';
+
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -61,6 +66,7 @@ export function SignupForm() {
           data: {
             full_name: values.name,
           },
+          emailRedirectTo: `${baseUrl}/auth/verification`,
         },
       });
 
