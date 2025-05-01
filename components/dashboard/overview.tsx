@@ -55,7 +55,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
         <CardContent>
           <div className="text-2xl font-bold">{stats.present}</div>
           <p className="text-xs text-muted-foreground">
-            {Math.round((stats.present / stats.total) * 100)}% attendance rate
+            {stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0}% attendance rate
           </p>
         </CardContent>
       </Card>
@@ -68,7 +68,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
         <CardContent>
           <div className="text-2xl font-bold">{stats.late}</div>
           <p className="text-xs text-muted-foreground">
-            {Math.round((stats.late / stats.total) * 100)}% late rate
+            {stats.total > 0 ? Math.round((stats.late / stats.total) * 100) : 0}% late rate
           </p>
         </CardContent>
       </Card>
@@ -81,7 +81,7 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
         <CardContent>
           <div className="text-2xl font-bold">{stats.absent}</div>
           <p className="text-xs text-muted-foreground">
-            {Math.round((stats.absent / stats.total) * 100)}% absence rate
+            {stats.total > 0 ? Math.round((stats.absent / stats.total) * 100) : 0}% absence rate
           </p>
         </CardContent>
       </Card>
@@ -91,27 +91,37 @@ export function DashboardOverview({ latestEvents, initialStats }: DashboardOverv
           <CardTitle>Attendance Overview</CardTitle>
           <CardDescription>Student attendance status distribution</CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-center">
+        <CardContent>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
-                  cy="50%"
+                  cy="45%"
                   innerRadius={60}
-                  outerRadius={80}
+                  outerRadius={90}
                   paddingAngle={5}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  // Remove direct labels to prevent overlapping
+                  label={false}
                   labelLine={false}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend />
+                <Tooltip formatter={(value, name) => [`${value} (${Math.round((Number(value) / stats.total) * 100)}%)`, name]} />
+                <Legend
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  wrapperStyle={{ paddingTop: "20px" }}
+                  formatter={(value, entry, index) => {
+                    const percent = Math.round((pieData[index]?.value / stats.total) * 100) || 0;
+                    return `${value}: ${pieData[index]?.value || 0} (${percent}%)`;
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

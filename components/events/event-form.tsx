@@ -90,7 +90,16 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
     const hour = Math.floor(i / 2);
     const minute = i % 2 === 0 ? "00" : "30";
     const formattedHour = hour.toString().padStart(2, "0");
-    return `${formattedHour}:${minute}`;
+
+    // Create the 24-hour format value (for internal use)
+    const value = `${formattedHour}:${minute}`;
+
+    // Create the 12-hour format label (for display)
+    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    const period = hour >= 12 ? "PM" : "AM";
+    const label = `${hour12}:${minute} ${period}`;
+
+    return { value, label };
   });
 
   // Parse existing event dates if editing
@@ -288,25 +297,55 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
 
               <div className="space-y-2">
                 <Label>Start Time</Label>
-                <Select
-                  onValueChange={(value) => setValue("start_time", value)}
-                  defaultValue={defaultStartTime}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeOptions.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Select
+                      onValueChange={(value) => setValue("start_time", value)}
+                      defaultValue={defaultStartTime}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="p-2 border-b">
+                          <p className="text-sm text-muted-foreground mb-2">Common times</p>
+                          {timeOptions.filter((t, i) => i % 4 === 0 || t.value === "12:00" || t.value === "12:30").map((time) => (
+                            <SelectItem key={time.value} value={time.value}>
+                              {time.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                        <div className="p-2">
+                          <p className="text-sm text-muted-foreground mb-2">All times</p>
+                          {timeOptions.map((time) => (
+                            <SelectItem key={time.value} value={time.value}>
+                              {time.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-[140px]">
+                    <Input
+                      type="time"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setValue("start_time", e.target.value);
+                        }
+                      }}
+                      defaultValue={defaultStartTime}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
                 {errors.start_time && (
                   <p className="text-sm text-destructive">{errors.start_time.message}</p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Select from dropdown or enter a custom time
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -341,25 +380,55 @@ export function EventForm({ event, isEditing = false }: EventFormProps) {
 
               <div className="space-y-2">
                 <Label>End Time</Label>
-                <Select
-                  onValueChange={(value) => setValue("end_time", value)}
-                  defaultValue={defaultEndTime}
-                  disabled={isLoading}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeOptions.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Select
+                      onValueChange={(value) => setValue("end_time", value)}
+                      defaultValue={defaultEndTime}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <div className="p-2 border-b">
+                          <p className="text-sm text-muted-foreground mb-2">Common times</p>
+                          {timeOptions.filter((t, i) => i % 4 === 0 || t.value === "12:00" || t.value === "12:30" || t.value === "17:00" || t.value === "17:30").map((time) => (
+                            <SelectItem key={time.value} value={time.value}>
+                              {time.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                        <div className="p-2">
+                          <p className="text-sm text-muted-foreground mb-2">All times</p>
+                          {timeOptions.map((time) => (
+                            <SelectItem key={time.value} value={time.value}>
+                              {time.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-[140px]">
+                    <Input
+                      type="time"
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setValue("end_time", e.target.value);
+                        }
+                      }}
+                      defaultValue={defaultEndTime}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
                 {errors.end_time && (
                   <p className="text-sm text-destructive">{errors.end_time.message}</p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  Select from dropdown or enter a custom time
+                </p>
               </div>
             </div>
 

@@ -29,9 +29,18 @@ export default async function DashboardPage() {
     console.error('Error fetching attendance stats:', statsError);
   }
 
+  // Fetch total number of students
+  const { count: studentCount, error: studentCountError } = await supabase
+    .from('students')
+    .select('*', { count: 'exact', head: true });
+
+  if (studentCountError) {
+    console.error('Error fetching student count:', studentCountError);
+  }
+
   // Calculate overall attendance statistics
   const stats: AttendanceStats = {
-    total: attendanceData?.length || 0,
+    total: studentCount || 0,
     present: 0,
     late: 0,
     absent: 0,
